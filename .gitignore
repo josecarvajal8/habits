@@ -1,0 +1,17 @@
+# macOS
+.DS_Store
+
+# Dependencies (if a build step is added later)
+node_modules/
+
+# Extension build output
+dist/
+*.zip
+
+# Logs
+*.log
+
+# Local env / secrets — never commit
+.env
+.env.*
+!.env.example
