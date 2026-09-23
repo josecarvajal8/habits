@@ -8,6 +8,10 @@ Loadable hello-world only: `manifest.json` plus a static popup (`src/popup.html`
 
 Popup **Test reminder** button sends a message to the service worker, which shows one notification and sets the toolbar badge to `!` (outstanding reminder). Clicking or closing the notification clears the badge. No alarms, no settings, no storage, no Snooze/Dismiss yet.
 
+## Settings (this branch)
+
+Options page (`src/options.html`) edits `{ activeDays, intervalMinutes, activityMode }` in `chrome.storage.local` via the shared `src/settings.js` module (defaults: Mon–Fri, 45 min, stretch break). The popup shows a one-line summary and links to settings; the test notification text follows the saved activity mode. Timed cycles (alarms, break/standing completion, snooze) are deferred to the next branch.
+
 ## Platform
 
 Chromium Manifest V3 extension. Compatible with Chrome and Brave. No build step required for V1; plain HTML/CSS/JS.

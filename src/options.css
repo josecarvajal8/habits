@@ -1,0 +1,57 @@
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+.options {
+  max-width: 480px;
+  padding: 24px;
+}
+
+h1 {
+  margin: 0 0 16px;
+  font-size: 20px;
+}
+
+section {
+  margin-bottom: 20px;
+}
+
+h2 {
+  margin: 0 0 8px;
+  font-size: 14px;
+}
+
+.days,
+.intervals {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.days label,
+.intervals label {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+}
+
+.choice {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  font-size: 13px;
+  margin-bottom: 8px;
+}
+
+button {
+  padding: 8px 16px;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+#status {
+  min-height: 16px;
+  font-size: 13px;
+}

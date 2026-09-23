@@ -12,8 +12,9 @@ A desktop browser user who sits for long periods and wants a lightweight nudge.
 
 | Setting | V1 rule |
 |---|---|
-| Active days | User-selectable weekdays (e.g. Mon–Fri) |
-| Reminder interval | One shared interval for all active days (user-defined, e.g. 45 min) |
+| Active days | User-selectable weekdays (e.g. Mon–Fri); no days selected pauses reminders |
+| Reminder interval | Preset: 30, 45, 60, or 90 minutes; default 45 |
+| Activity mode | Stretch break (move/stretch 5 min, default) or standing desk (work standing 10 min) |
 | Snooze duration | Fixed at 10 minutes, not configurable |
 
 ## Behavior
