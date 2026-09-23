@@ -1,0 +1,10 @@
+{
+  "manifest_version": 3,
+  "name": "Stand Reminder",
+  "version": "0.1.0",
+  "description": "Lightweight reminder to stand during the day.",
+  "action": {
+    "default_popup": "src/popup.html",
+    "default_title": "Stand Reminder"
+  }
+}

@@ -1,5 +1,9 @@
 # Architecture — Stand Reminder V1
 
+## Phase 0 — Extension scaffold (current)
+
+Loadable hello-world only: `manifest.json` plus a static popup (`src/popup.html`, `src/popup.css`). No permissions, no background service worker, no alarms, no notifications, no storage, no options page. Those arrive with the reminder milestone.
+
 ## Platform
 
 Chromium Manifest V3 extension. Compatible with Chrome and Brave. No build step required for V1; plain HTML/CSS/JS.
