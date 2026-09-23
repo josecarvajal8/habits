@@ -1,39 +1,34 @@
 # Habits — Stand Reminder
 
-A minimal Chrome / Brave (Manifest V3) extension that reminds you to stand during configured days.
+Chromium (Manifest V3) browser extension. Works in Chrome and Brave.
 
-## V1 scope
+## Requirements
 
-- Browser notification after a user-defined interval.
-- Timer starts fresh on browser startup.
-- Notification actions: **Snooze 10 min** and **Dismiss**.
-- Settings: active weekdays + one shared reminder interval.
-- Snooze is fixed at 10 minutes in V1.
-- Storage is local-only via `chrome.storage.local`. No account, sync, backend, or analytics.
+- Google Chrome or Brave (desktop).
+- Git.
+- No package manager, dependencies, environment variables, or build step.
 
-See `docs/product.md` for the full definition and non-goals.
+## Run locally
 
-## Project layout
+1. Open `chrome://extensions` (Chrome) or `brave://extensions` (Brave).
+2. Enable **Developer mode**.
+3. Choose **Load unpacked** and select this repository folder.
+4. Click the extension toolbar icon to open the popup.
+
+## Repository layout
 
 ```text
-AGENTS.md                    # how to work in this repo (approval-first)
-docs/product.md              # what V1 does
-docs/architecture.md         # how the extension is structured
-docs/decisions/              # durable choices (ADRs)
-.opencode/agents/            # product, architect, reviewer profiles
-.opencode/commands/          # /define-feature, /plan-feature, /review
-.opencode/skills/            # reusable task guidance (e.g. chrome-extension)
-opencode.jsonc               # project OpenCode configuration
-src/                         # created only after design approval (not in V1 foundation)
+manifest.json                # extension manifest (entry point)
+src/popup.html, src/popup.css # toolbar popup UI
+docs/                        # product definition, architecture, decisions
+.opencode/                   # agents, commands, skills
+AGENTS.md                    # working rules for this repo
+opencode.jsonc               # OpenCode project configuration
 ```
 
-## Workflow
+## Docs
 
-1. Describe an idea.
-2. Clarify it into `docs/product.md` acceptance criteria.
-3. Approve the definition before any code.
-4. Approve a small technical plan.
-5. Implement only that plan.
-6. Review the diff.
-
-Details in `AGENTS.md`.
+- `docs/product.md` — what the extension should do.
+- `docs/architecture.md` — how it is structured.
+- `docs/decisions/` — durable technical and scope choices.
+- `AGENTS.md` — how to work in this repository.
