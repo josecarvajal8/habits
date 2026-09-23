@@ -19,14 +19,16 @@ A desktop browser user who sits for long periods and wants a lightweight nudge.
 
 ## Behavior
 
-1. On browser startup, begin the interval timer from zero.
-2. On an active day, show a browser notification after the interval elapses.
-3. Each notification offers two actions:
-   - **Snooze 10 min** — next reminder in 10 minutes.
-   - **Dismiss** — resume the normal interval cycle.
-4. On inactive days, show no reminders.
-5. All configuration lives in browser-local extension storage (`chrome.storage.local`).
-6. While a reminder is outstanding (notification visible), the toolbar badge shows `!`. Snoozing, dismissing, or closing the notification clears it.
+1. On install and browser startup, begin a fresh work interval from zero.
+2. On an active day, show a reminder notification after the interval with two actions (at most two buttons are allowed):
+   - **Start break / Start standing** — begins the activity timer: 5 minutes for stretch break, 10 minutes for standing desk.
+   - **Snooze 10 min** — the reminder fires again in 10 minutes.
+   - Closing the notification or clicking its body = **Ignore**, which restarts a fresh work interval.
+3. When the activity timer ends, show a completion notification (“Break complete” / “You can sit down”) and automatically start the next work interval.
+4. On inactive days, or with no days selected, show no reminders; the worker keeps rechecking each interval.
+5. The popup shows live cycle status (working, snoozed, stretching, standing, awaiting action, paused) plus the next scheduled time.
+6. All configuration lives in browser-local extension storage (`chrome.storage.local`).
+7. While a reminder or completion notification is outstanding, the toolbar badge shows `!`. Acting on it, or clicking/closing it, clears the badge.
 
 ## Acceptance criteria
 
@@ -34,9 +36,12 @@ A desktop browser user who sits for long periods and wants a lightweight nudge.
 - [ ] User can set one reminder interval and it persists.
 - [ ] Fresh browser start restarts the timer; no stale timers fire immediately.
 - [ ] Notification appears after the interval on an active day.
+- [ ] Start begins a 5-minute (stretch) or 10-minute (standing desk) activity timer.
+- [ ] Completion notification appears and the next work interval starts automatically.
 - [ ] Snooze delays exactly one cycle by 10 minutes.
-- [ ] Dismiss resumes the normal interval.
-- [ ] No notification on inactive days.
+- [ ] Closing/ignoring restarts a fresh work interval.
+- [ ] No notification on inactive days or with no days selected.
+- [ ] Popup shows accurate cycle status and next time.
 - [ ] Works in both Chrome and Brave (Chromium Manifest V3).
 
 ## Non-goals for V1
