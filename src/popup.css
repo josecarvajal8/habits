@@ -23,6 +23,11 @@ button {
   padding: 8px;
   font-size: 13px;
   cursor: pointer;
+  margin-bottom: 8px;
+}
+
+button.secondary {
+  margin-bottom: 0;
 }
 
 #status {

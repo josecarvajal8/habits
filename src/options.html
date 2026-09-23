@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Stand Reminder — Settings</title>
+    <link rel="stylesheet" href="options.css" />
+  </head>
+  <body>
+    <main class="options">
+      <h1>Stand Reminder settings</h1>
+
+      <section>
+        <h2>Active days</h2>
+        <div id="days" class="days"></div>
+      </section>
+
+      <section>
+        <h2>Remind me every</h2>
+        <div id="intervals" class="intervals"></div>
+      </section>
+
+      <section>
+        <h2>Activity</h2>
+        <label class="choice">
+          <input type="radio" name="activityMode" value="stretch-break" />
+          <span><strong>Stretch break</strong> — stand up, move, and stretch for 5 minutes.</span>
+        </label>
+        <label class="choice">
+          <input type="radio" name="activityMode" value="standing-desk" />
+          <span><strong>Standing desk</strong> — raise your desk and work standing for 10 minutes.</span>
+        </label>
+      </section>
+
+      <button id="save" type="button">Save settings</button>
+      <p id="status" role="status"></p>
+    </main>
+    <script src="settings.js"></script>
+    <script src="options.js"></script>
+  </body>
+</html>
