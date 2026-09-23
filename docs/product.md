@@ -25,6 +25,7 @@ A desktop browser user who sits for long periods and wants a lightweight nudge.
    - **Dismiss** — resume the normal interval cycle.
 4. On inactive days, show no reminders.
 5. All configuration lives in browser-local extension storage (`chrome.storage.local`).
+6. While a reminder is outstanding (notification visible), the toolbar badge shows `!`. Snoozing, dismissing, or closing the notification clears it.
 
 ## Acceptance criteria
 
