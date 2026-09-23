@@ -4,7 +4,26 @@
 
 Loadable hello-world only: `manifest.json` plus a static popup (`src/popup.html`, `src/popup.css`). No permissions, no background service worker, no alarms, no notifications, no storage, no options page. Those arrive with the reminder milestone.
 
-## Test slice — Alerts and badge (current branch)
+## Worker logic (this branch)
+
+Sequential one-shot alarms replace the earlier periodic-alarm design:
+
+```text
+Working
+  ↓ configured interval
+Reminder awaiting action
+  ├─ Start activity → Activity (5 min stretch / 10 min standing)
+  ├─ Snooze         → Snoozed (10 min) → Reminder
+  └─ Close/click    → Working (fresh interval, "ignore")
+
+Activity
+  ↓ 5 or 10 min
+Completion notification + automatically restart Working
+```
+
+Named alarms: `work`, `snooze`, `activity`. Only one is ever scheduled: every transition clears all three first. Cycle state `{ phase, nextAt, mode }` persists in `chrome.storage.local` under `cycle` so the popup can render status after worker suspension. The **Test reminder** button fires an immediate real reminder (same code path as the timer) for action testing.
+
+## Test slice — Alerts and badge (superseded)
 
 Popup **Test reminder** button sends a message to the service worker, which shows one notification and sets the toolbar badge to `!` (outstanding reminder). Clicking or closing the notification clears the badge. No alarms, no settings, no storage, no Snooze/Dismiss yet.
 
@@ -42,20 +61,23 @@ Why:
 
 ## Data flow
 
-1. `onInstalled` / `onStartup` / settings change → (re)create repeating alarm with `periodInMinutes = intervalMinutes`.
-2. Alarm fires → check current weekday against `activeDays`.
-3. Active day → `notifications.create`. Inactive day → do nothing, wait for next alarm.
-4. Button click:
-   - Snooze → one-shot `alarms.create({ delayInMinutes: 10 })`.
-   - Dismiss → do nothing; periodic alarm continues.
-5. Options page reads/writes `chrome.storage.local`; on change, background rebuilds the alarm.
+1. `onInstalled` / `onStartup` / settings change → clear all alarms, create one-shot `work` alarm with `delayInMinutes = intervalMinutes`, persist `{ phase: 'working', nextAt }`.
+2. `work`/`snooze` alarm fires → check current weekday against `activeDays`. Inactive (or no days) → schedule a fresh `work` alarm and keep checking. Active → reminder notification with Start + Snooze buttons, badge `!`, phase `awaiting`.
+3. Reminder action:
+   - Start → one-shot `activity` alarm (`5` min stretch / `10` min standing), phase `activity`.
+   - Snooze → one-shot `snooze` alarm (`10` min), phase `snoozed`.
+   - Click body / close (`byUser`) → fresh `work` alarm (“ignore”).
+4. `activity` alarm fires → completion notification, badge `!`, immediately schedule a fresh `work` alarm (auto-restart).
+5. Completion click/close clears the badge; the next cycle is already running.
+6. Options page reads/writes `chrome.storage.local`; settings changes rebuild the work alarm. `storage.onChanged` ignores the worker's own `cycle` writes.
 
 Browser startup always rebuilds the periodic alarm from stored settings, giving the "fresh cycle" behavior.
 
 ## Reliability notes
 
 - Service workers suspend; all timer state must be re-derivable from `chrome.storage.local` + alarms, not in-memory variables.
-- Keep one named periodic alarm (e.g. `stand-reminder`) plus one transient snooze alarm (e.g. `stand-snooze`). Clear/recreate on settings change to avoid duplicates.
+- Only one alarm (`work`, `snooze`, or `activity`) is ever scheduled; every transition clears all three first.
+- `notifications.clear()` fires `onClosed` with `byUser === false`; only explicit user dismissal restarts the cycle.
 - Day check uses local time at fire time.
 
 ## Verification (manual for V1)
