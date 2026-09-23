@@ -3,7 +3,7 @@
   "name": "Stand Reminder",
   "version": "0.1.0",
   "description": "Lightweight reminder to stand during the day.",
-  "permissions": ["notifications", "storage"],
+  "permissions": ["alarms", "notifications", "storage"],
   "background": {
     "service_worker": "src/background.js"
   },
