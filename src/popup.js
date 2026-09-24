@@ -73,7 +73,10 @@ async function computeView() {
   const cycle = stored.cycle || { phase: 'working', nextAt: null, mode: null };
 
   if (settings.activeDays.length === 0) {
-    return { kind: 'paused' };
+    return { kind: 'paused', nextAt: null };
+  }
+  if (cycle.phase === 'paused') {
+    return { kind: 'paused', nextAt: cycle.nextAt };
   }
   if (cycle.phase === 'awaiting') {
     return { kind: 'awaiting', mode: cycle.mode || settings.activityMode };
@@ -106,7 +109,9 @@ function paintStatic() {
     setCardWash(null);
     setArc('ss-ring-paused', 0);
     countdownSub.textContent = 'paused';
-    nextLine.innerHTML = 'Set active days in <b>Settings</b>';
+    nextLine.innerHTML = view.nextAt
+      ? `Paused until <b>${formatTime(view.nextAt)}</b>`
+      : 'Set active days in <b>Settings</b>';
     setPrimary(null);
     return;
   }

@@ -27,6 +27,10 @@ Named alarms: `work`, `snooze`, `activity`. Only one is ever scheduled: every tr
 
 Visual system adapted from the exported Stand & Sit design package (`tokens.css` + curated `components.css` under `src/styles/`): light/dark surfaces, blue working state, orange activity state, state pill + progress ring + countdown + next-event status card, contextual primary action (Start break/standing now, End break/Sit now), dedicated auto-saving options page with day chips, interval presets, and activity choices. Excluded for now: daily timeline/goals, minute-countdown badge, stateful toolbar icons, Pause, and bundled Manrope (system font stack, no remote requests). Extension icons replaced with the design package PNGs.
 
+## Work hours (this branch)
+
+Optional `workHours: { enabled, start, end }` (`chrome.storage.local`, off by default, local time, same-day windows). Outside the window the worker clears all alarms and schedules a one-shot `wakeup` alarm for the next window start (`{ phase: 'paused', nextAt }`); the wakeup handler begins a full fresh work interval inside the window. Snoozes crossing closing time therefore defer naturally, and an activity that ends after close still notifies completion before parking. Options page: switch + start/end time inputs with start-before-end validation. “Pause for today” remains out of scope.
+
 ## Test slice — Alerts and badge (superseded)
 
 Popup **Test reminder** button sends a message to the service worker, which shows one notification and sets the toolbar badge to `!` (outstanding reminder). Clicking or closing the notification clears the badge. No alarms, no settings, no storage, no Snooze/Dismiss yet.
@@ -66,7 +70,7 @@ Why:
 ## Data flow
 
 1. `onInstalled` / `onStartup` / settings change → clear all alarms, create one-shot `work` alarm with `delayInMinutes = intervalMinutes`, persist `{ phase: 'working', nextAt }`.
-2. `work`/`snooze` alarm fires → check current weekday against `activeDays`. Inactive (or no days) → schedule a fresh `work` alarm and keep checking. Active → reminder notification with Start + Snooze buttons, badge `!`, phase `awaiting`.
+2. `work`/`snooze` alarm fires → check current weekday against `activeDays` and time against `workHours`. Inactive → park on a `wakeup` alarm for the next window (or a fresh `work` alarm when hours are disabled). Active → reminder notification with Start + Snooze buttons, badge `!`, phase `awaiting`.
 3. Reminder action:
    - Start → one-shot `activity` alarm (`5` min stretch / `10` min standing), phase `activity`.
    - Snooze → one-shot `snooze` alarm (`10` min), phase `snoozed`.
@@ -80,7 +84,7 @@ Browser startup always rebuilds the periodic alarm from stored settings, giving 
 ## Reliability notes
 
 - Service workers suspend; all timer state must be re-derivable from `chrome.storage.local` + alarms, not in-memory variables.
-- Only one alarm (`work`, `snooze`, or `activity`) is ever scheduled; every transition clears all three first.
+- Only one alarm (`work`, `snooze`, `activity`, or `wakeup`) is ever scheduled; every transition clears all four first.
 - `notifications.clear()` fires `onClosed` with `byUser === false`; only explicit user dismissal restarts the cycle.
 - Day check uses local time at fire time.
 

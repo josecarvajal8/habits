@@ -37,6 +37,28 @@
         </label>
       </div>
 
+      <h2 class="ss-section-label">Work hours</h2>
+      <div class="ss-group">
+        <div class="ss-row">
+          <div>
+            <div class="ss-row-label">Only during work hours</div>
+            <div class="ss-row-hint">Pause reminders outside these hours</div>
+          </div>
+          <button type="button" role="switch" class="ss-switch" id="wh-enabled" aria-checked="false" aria-label="Only during work hours"></button>
+        </div>
+        <div class="ss-row">
+          <div>
+            <div class="ss-row-label">Hours</div>
+            <div class="ss-row-hint" id="wh-hint">Local time, same day</div>
+          </div>
+          <div class="ss-time-range">
+            <input type="time" id="wh-start" value="09:00" aria-label="Work hours start" />
+            <span aria-hidden="true">–</span>
+            <input type="time" id="wh-end" value="17:00" aria-label="Work hours end" />
+          </div>
+        </div>
+      </div>
+
       <p class="ss-saved" id="status" role="status"></p>
     </div>
     <script src="settings.js"></script>
