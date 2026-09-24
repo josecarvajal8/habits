@@ -41,7 +41,7 @@ Options page (`src/options.html`) edits `{ activeDays, intervalMinutes, activity
 
 ## Platform
 
-Chromium Manifest V3 extension. Compatible with Chrome and Brave. No build step required for V1; plain HTML/CSS/JS.
+Chromium Manifest V3 extension. Compatible with Chrome and Brave. Plain HTML/CSS/JS with a dependency-free packaging script (`scripts/build.sh`); no bundler, transpiler, or npm dependencies.
 
 ## Components
 
