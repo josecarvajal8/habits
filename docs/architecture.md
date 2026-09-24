@@ -21,7 +21,11 @@ Activity
 Completion notification + automatically restart Working
 ```
 
-Named alarms: `work`, `snooze`, `activity`. Only one is ever scheduled: every transition clears all three first. Cycle state `{ phase, nextAt, mode }` persists in `chrome.storage.local` under `cycle` so the popup can render status after worker suspension. The **Test reminder** button fires an immediate real reminder (same code path as the timer) for action testing.
+Named alarms: `work`, `snooze`, `activity`. Only one is ever scheduled: every transition clears all three first. Cycle state `{ phase, nextAt, mode }` persists in `chrome.storage.local` under `cycle` so the popup can render status after worker suspension. The popup primary action starts/ends the activity immediately through `start-now` / `end-now` messages; the legacy `test-reminder` message fires an immediate real reminder through the same code path as the timer.
+
+## UI polish (this branch)
+
+Visual system adapted from the exported Stand & Sit design package (`tokens.css` + curated `components.css` under `src/styles/`): light/dark surfaces, blue working state, orange activity state, state pill + progress ring + countdown + next-event status card, contextual primary action (Start break/standing now, End break/Sit now), dedicated auto-saving options page with day chips, interval presets, and activity choices. Excluded for now: daily timeline/goals, minute-countdown badge, stateful toolbar icons, Pause, and bundled Manrope (system font stack, no remote requests). Extension icons replaced with the design package PNGs.
 
 ## Test slice — Alerts and badge (superseded)
 
