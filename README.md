@@ -43,7 +43,7 @@ opencode.jsonc               # OpenCode project configuration
 
 ## Packaging
 
-`scripts/build.sh` copies only the runtime whitelist (`manifest.json`, `src/`, `icons/`) into `dist/stand-reminder/` and validates that every manifest entry point resolves. With `--zip` it also creates the versioned tester archive. `dist/` is git-ignored; always test from the built folder, never the repo root.
+`scripts/build.sh` copies only the runtime whitelist (`manifest.json`, `INSTALL.txt`, `src/`, `icons/`) into `dist/stand-reminder/` and validates that every manifest entry point resolves. With `--zip` it also creates the versioned tester archive. `dist/` is git-ignored; always test from the built folder, never the repo root.
 
 ## Docs
 

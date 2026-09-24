@@ -1,0 +1,49 @@
+Stand Reminder — tester install guide
+====================================
+
+You should have an unzipped folder named "stand-reminder" containing
+manifest.json. Start here.
+
+1. Open chrome://extensions (Chrome) or brave://extensions (Brave).
+2. Turn on "Developer mode" (top-right corner).
+3. Click "Load unpacked".
+4. Select the "stand-reminder" folder (the one containing manifest.json),
+   then click "Select" / "Open".
+5. Click the puzzle-piece icon in the browser toolbar and pin
+   "Stand Reminder" so its icon stays visible.
+6. Allow notifications for your browser in your system settings,
+   otherwise reminders stay silent.
+7. If reminders only appear in Notification Center and never as banners,
+   turn off Focus / Do Not Disturb.
+8. Click the Stand Reminder icon, open Settings (gear icon), and choose
+   your active days, reminder interval, activity type, and work hours.
+9. Keep the "stand-reminder" folder where it is while testing. Moving or
+   deleting it breaks the installed extension.
+
+Updating to a newer test build
+------------------------------
+Replace the files inside the same "stand-reminder" folder, then open
+chrome://extensions (or brave://extensions) and click "Reload" on
+Stand Reminder.
+
+Uninstalling
+------------
+On the extensions page click "Remove" on Stand Reminder, then delete the
+"stand-reminder" folder.
+
+Quick test checklist
+--------------------
+- Popup shows WORKING with a live countdown.
+- Settings changes show "Saved" and survive closing the browser.
+- "Start break now" shows a reminder notification and the badge.
+- Snooze reminds again after 10 minutes.
+- Outside active days or work hours the popup shows Paused.
+
+Troubleshooting
+---------------
+- "Manifest file is missing or unreadable": you selected the wrong
+  folder. Select the folder that directly contains manifest.json.
+- No notification appears: check system notification permissions and
+  Focus / Do Not Disturb.
+- Popup says Paused: check active days (and work hours, if enabled)
+  in Settings.

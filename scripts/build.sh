@@ -20,8 +20,9 @@ fi
 # Manifest must parse and expose a version for the zip name.
 VERSION="$(python3 -c "import json; print(json.load(open('$ROOT/manifest.json'))['version'])")"
 
-# Required runtime entries: every path the manifest or pages reference.
-for f in manifest.json \
+# Required runtime entries: every path the manifest or pages reference,
+# plus the tester instructions.
+for f in manifest.json INSTALL.txt \
   src/background.js src/settings.js src/popup.html src/popup.js \
   src/options.html src/options.js \
   src/styles/tokens.css src/styles/components.css \
@@ -35,7 +36,7 @@ done
 # Recreate only our own output directory; never anything else.
 rm -rf "$OUT"
 mkdir -p "$OUT/src/styles" "$OUT/icons"
-cp "$ROOT/manifest.json" "$OUT/manifest.json"
+cp "$ROOT/manifest.json" "$ROOT/INSTALL.txt" "$OUT/"
 cp "$ROOT"/src/*.js "$ROOT"/src/*.html "$OUT/src/"
 cp "$ROOT"/src/styles/*.css "$OUT/src/styles/"
 cp "$ROOT"/icons/*.png "$OUT/icons/"
