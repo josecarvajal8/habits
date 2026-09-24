@@ -19,7 +19,7 @@ Building or modifying `manifest.json`, background service worker, alarms, notifi
 6. Notifications: reminder with `Start break/standing` + `Snooze 10 min` buttons via `chrome.notifications.onButtonClicked`. Body click or close (`byUser`) = ignore → fresh work interval. Completion notification auto-restarts work; its click/close only clears the badge. Guard `onClosed` with `byUser` since programmatic clears also fire it.
 7. Snooze V1: one-shot `delayInMinutes: 10`. Activity: `5` min stretch break, `10` min standing desk. Persist `{ phase, nextAt, mode }` under storage key `cycle` for popup status; settings-change handling must ignore `cycle` writes.
 8. Settings shape: `{ activeDays: number[], intervalMinutes: number, activityMode: 'stretch-break' | 'standing-desk' }`, stored in `chrome.storage.local`. No sync, server, or external requests.
-9. No build step in V1: plain HTML/CSS/JS. Options page writes storage; background re-creates alarms on `chrome.storage.onChanged`.
+9. Plain HTML/CSS/JS, packaged dependency-free via `scripts/build.sh`. Options page writes storage; background re-creates alarms on `chrome.storage.onChanged`.
 
 ## Verification
 
