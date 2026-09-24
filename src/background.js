@@ -106,7 +106,7 @@ async function fireReminder() {
   const mode = settings.activityMode;
   await chrome.notifications.create(REMINDER_ID, {
     type: 'basic',
-    iconUrl: chrome.runtime.getURL('icons/icon48.png'),
+    iconUrl: chrome.runtime.getURL('icons/icon-48.png'),
     title: 'Time to stand',
     message: REMINDER_MESSAGES[mode],
     buttons: [{ title: START_LABELS[mode] }, { title: 'Snooze 10 min' }],
@@ -123,7 +123,7 @@ async function fireCompletion() {
   await scheduleWork(settings);
   await chrome.notifications.create(COMPLETE_ID, {
     type: 'basic',
-    iconUrl: chrome.runtime.getURL('icons/icon48.png'),
+    iconUrl: chrome.runtime.getURL('icons/icon-48.png'),
     title: 'Stand Reminder',
     message: COMPLETE_MESSAGES[mode],
     requireInteraction: true,
@@ -206,10 +206,30 @@ chrome.notifications.onClosed.addListener((id, byUser) => {
   })().catch(() => {});
 });
 
-// Popup test button: run one immediate real cycle for action testing.
+// Popup actions: run one immediate real cycle for testing, start the
+// activity right away, or end it early (completion + auto-restart).
 chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
   if (message && message.type === 'test-reminder') {
     fireReminder().then(
+      () => sendResponse({ ok: true }),
+      () => sendResponse({ ok: false }),
+    );
+    return true;
+  }
+  if (message && message.type === 'start-now') {
+    HabitsSettings.load().then(
+      async (settings) => {
+        await chrome.notifications.clear(REMINDER_ID);
+        await startActivity(settings);
+        await setBadge(false);
+        sendResponse({ ok: true });
+      },
+      () => sendResponse({ ok: false }),
+    );
+    return true;
+  }
+  if (message && message.type === 'end-now') {
+    fireCompletion().then(
       () => sendResponse({ ok: true }),
       () => sendResponse({ ok: false }),
     );

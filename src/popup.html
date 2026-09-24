@@ -4,17 +4,31 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Stand Reminder</title>
-    <link rel="stylesheet" href="popup.css" />
+    <link rel="stylesheet" href="styles/tokens.css" />
+    <link rel="stylesheet" href="styles/components.css" />
   </head>
   <body>
-    <main class="popup">
-      <h1>Stand Reminder</h1>
-      <p id="cycle-status">Loading status…</p>
-      <p id="summary" class="summary">Loading settings…</p>
-      <button id="test-reminder" type="button">Test reminder</button>
-      <button id="open-settings" type="button" class="secondary">Settings</button>
-      <p id="status" role="status"></p>
-    </main>
+    <div class="ss-root ss-popup">
+      <header class="ss-header">
+        <svg viewBox="0 0 128 128" width="24" height="24" class="ss-logo" aria-hidden="true"><rect width="128" height="128" rx="28" fill="var(--icon-tile)"></rect><circle cx="33" cy="28" r="11" fill="var(--icon-stand)"></circle><path d="M33 52V96" stroke="var(--icon-stand)" stroke-width="22" stroke-linecap="round" fill="none"></path><circle cx="71" cy="56" r="11" fill="var(--icon-sit)"></circle><path d="M71 80V96H95" stroke="var(--icon-sit)" stroke-width="22" stroke-linecap="round" stroke-linejoin="round" fill="none"></path></svg>
+        <h1>Stand Reminder</h1>
+        <button type="button" id="open-settings" class="ss-icon-btn" aria-label="Settings"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"></path></svg></button>
+      </header>
+      <section class="ss-card ss-status" id="status-card" aria-live="polite">
+        <span class="ss-pill ss-pill-sit" id="state-pill">Working</span>
+        <div class="ss-ring" style="width:148px;height:148px" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="ring">
+          <svg width="148" height="148" viewBox="0 0 148 148"><circle class="ss-ring-track" cx="74" cy="74" r="69" fill="none" stroke-width="10"></circle><circle class="ss-ring-sit" id="ring-arc" cx="74" cy="74" r="69" fill="none" stroke-width="10" stroke-linecap="round" stroke-dasharray="433.54" stroke-dashoffset="433.54"></circle></svg>
+          <div class="ss-ring-inner">
+            <div class="ss-countdown" id="countdown">--:--</div>
+            <div class="ss-countdown-sub" id="countdown-sub">left</div>
+          </div>
+        </div>
+        <div class="ss-next" id="next-line">Next: <b>—</b></div>
+      </section>
+      <div class="ss-actions">
+        <button type="button" id="primary-action" class="ss-btn ss-btn-stand ss-btn-block">Start break now</button>
+      </div>
+    </div>
     <script src="settings.js"></script>
     <script src="popup.js"></script>
   </body>

@@ -1,0 +1,91 @@
+/* Stand & Sit — design tokens. Light by default; dark follows the OS,
+   or force it with <html data-theme="dark"> / data-theme="light". */
+:root {
+  --surface: #f7f5f0;
+  --surface-raised: #ffffff;
+  --surface-sunken: #ebe7de;
+  --border: #dcd6ca;
+  --border-strong: #8a8378;
+  --ink: #1c1f22;
+  --ink-muted: #5b6168;
+  --stand: #dc6a08;
+  --on-stand: #1c1f22;
+  --stand-ink: #a14a00;
+  --stand-soft: #fde8d3;
+  --sit: #1f5f7a;
+  --on-sit: #ffffff;
+  --sit-ink: #1f5f7a;
+  --sit-soft: #d9eaf1;
+  --success: #2a7a4b;
+  --danger: #b3261e;
+  --focus: #0b57d0;
+  --icon-tile: #1c1f22;
+  --icon-stand: #ff9a3d;
+  --icon-sit: #5fb3d4;
+  --icon-dim: #4a5057;
+  --shadow-card: 0 1px 2px rgba(28,31,34,0.06), 0 4px 12px rgba(28,31,34,0.06);
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-pill: 999px;
+  --popup-width: 320px;
+  --ring-size: 148px;
+  --control-height: 40px;
+  --font-sans: "Manrope", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --surface: #15171a;
+    --surface-raised: #1e2124;
+    --surface-sunken: #0e1012;
+    --border: #2f3338;
+    --border-strong: #6b727a;
+    --ink: #eef0f1;
+    --ink-muted: #a3aab1;
+    --stand: #ff9a3d;
+    --on-stand: #1c1f22;
+    --stand-ink: #ffb070;
+    --stand-soft: #3a2512;
+    --sit: #3d8fb3;
+    --on-sit: #0e1a20;
+    --sit-ink: #86c9e3;
+    --sit-soft: #132a34;
+    --success: #6fcf97;
+    --danger: #f2a19b;
+    --focus: #8ab4f8;
+    --icon-tile: #1c1f22;
+    --icon-stand: #ff9a3d;
+    --icon-sit: #5fb3d4;
+    --icon-dim: #4a5057;
+    --shadow-card: 0 1px 2px rgba(0,0,0,0.4);
+  }
+}
+[data-theme="dark"] {
+  --surface: #15171a;
+  --surface-raised: #1e2124;
+  --surface-sunken: #0e1012;
+  --border: #2f3338;
+  --border-strong: #6b727a;
+  --ink: #eef0f1;
+  --ink-muted: #a3aab1;
+  --stand: #ff9a3d;
+  --on-stand: #1c1f22;
+  --stand-ink: #ffb070;
+  --stand-soft: #3a2512;
+  --sit: #3d8fb3;
+  --on-sit: #0e1a20;
+  --sit-ink: #86c9e3;
+  --sit-soft: #132a34;
+  --success: #6fcf97;
+  --danger: #f2a19b;
+  --focus: #8ab4f8;
+  --icon-tile: #1c1f22;
+  --icon-stand: #ff9a3d;
+  --icon-sit: #5fb3d4;
+  --icon-dim: #4a5057;
+  --shadow-card: 0 1px 2px rgba(0,0,0,0.4);
+}
