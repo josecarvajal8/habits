@@ -6,6 +6,7 @@ const COMPLETE_ID = 'stand-complete';
 const ALARM_WORK = 'work';
 const ALARM_SNOOZE = 'snooze';
 const ALARM_ACTIVITY = 'activity';
+const ALARM_WAKEUP = 'wakeup';
 
 const SNOOZE_MINUTES = 10;
 const ACTIVITY_MINUTES = {
@@ -48,6 +49,7 @@ async function clearAllAlarms() {
   await chrome.alarms.clear(ALARM_WORK);
   await chrome.alarms.clear(ALARM_SNOOZE);
   await chrome.alarms.clear(ALARM_ACTIVITY);
+  await chrome.alarms.clear(ALARM_WAKEUP);
 }
 
 async function scheduleWork(settings) {
@@ -86,7 +88,34 @@ async function startActivity(settings) {
 }
 
 function isActiveDay(settings) {
-  return settings.activeDays.includes(new Date().getDay());
+  return HabitsSettings.isActiveNow(settings);
+}
+
+// Outside active days/hours: sleep until the next window opens (or fall
+// back to a fresh work interval when no resume time applies).
+async function scheduleWakeupOrWork(settings) {
+  const resume = HabitsSettings.nextResumeTime(settings);
+  if (resume == null) {
+    await scheduleWork(settings);
+    return;
+  }
+  await clearAllAlarms();
+  await chrome.alarms.create(ALARM_WAKEUP, {
+    delayInMinutes: Math.max(
+      1,
+      Math.ceil((resume - Date.now()) / 60000),
+    ),
+  });
+  await setCycle({ phase: 'paused', nextAt: resume, mode: null });
+}
+
+// (Re)enter the cycle: fresh work interval when active, otherwise park.
+async function enterWindow(settings) {
+  if (HabitsSettings.isActiveNow(settings)) {
+    await scheduleWork(settings);
+  } else {
+    await scheduleWakeupOrWork(settings);
+  }
 }
 
 async function setBadge(on) {
@@ -96,11 +125,11 @@ async function setBadge(on) {
   }
 }
 
-// Work/snooze timer fired: notify on active days, otherwise keep checking.
+// Work/snooze timer fired: notify when active, otherwise park until resume.
 async function fireReminder() {
   const settings = await HabitsSettings.load();
   if (!isActiveDay(settings)) {
-    await scheduleWork(settings);
+    await scheduleWakeupOrWork(settings);
     return;
   }
   const mode = settings.activityMode;
@@ -116,11 +145,12 @@ async function fireReminder() {
   await setCycle({ phase: 'awaiting', nextAt: null, mode });
 }
 
-// Activity timer fired: notify completion, then auto-restart the cycle.
+// Activity timer fired: notify completion, then auto-restart the cycle
+// (or park if the window has closed meanwhile).
 async function fireCompletion() {
   const settings = await HabitsSettings.load();
   const mode = settings.activityMode;
-  await scheduleWork(settings);
+  await enterWindow(settings);
   await chrome.notifications.create(COMPLETE_ID, {
     type: 'basic',
     iconUrl: chrome.runtime.getURL('icons/icon-48.png'),
@@ -132,15 +162,11 @@ async function fireCompletion() {
 }
 
 chrome.runtime.onInstalled.addListener(() => {
-  HabitsSettings.load()
-    .then(scheduleWork)
-    .catch(() => {});
+  HabitsSettings.load().then(enterWindow).catch(() => {});
 });
 
 chrome.runtime.onStartup.addListener(() => {
-  HabitsSettings.load()
-    .then(scheduleWork)
-    .catch(() => {});
+  HabitsSettings.load().then(enterWindow).catch(() => {});
 });
 
 chrome.storage.onChanged.addListener((changes, area) => {
@@ -148,11 +174,10 @@ chrome.storage.onChanged.addListener((changes, area) => {
   if (
     'activeDays' in changes ||
     'intervalMinutes' in changes ||
-    'activityMode' in changes
+    'activityMode' in changes ||
+    'workHours' in changes
   ) {
-    HabitsSettings.load()
-      .then(scheduleWork)
-      .catch(() => {});
+    HabitsSettings.load().then(enterWindow).catch(() => {});
   }
 });
 
@@ -161,6 +186,9 @@ chrome.alarms.onAlarm.addListener((alarm) => {
     fireReminder().catch(() => {});
   } else if (alarm.name === ALARM_ACTIVITY) {
     fireCompletion().catch(() => {});
+  } else if (alarm.name === ALARM_WAKEUP) {
+    // Window opened: begin a full fresh interval inside it.
+    HabitsSettings.load().then(enterWindow).catch(() => {});
   }
 });
 
@@ -185,7 +213,7 @@ chrome.notifications.onClicked.addListener((id) => {
     if (id === REMINDER_ID) {
       const settings = await HabitsSettings.load();
       await chrome.notifications.clear(REMINDER_ID);
-      await scheduleWork(settings);
+      await enterWindow(settings);
       await setBadge(false);
     } else if (id === COMPLETE_ID) {
       await setBadge(false);
@@ -200,7 +228,7 @@ chrome.notifications.onClosed.addListener((id, byUser) => {
   (async () => {
     if (id === REMINDER_ID) {
       const settings = await HabitsSettings.load();
-      await scheduleWork(settings);
+      await enterWindow(settings);
     }
     await setBadge(false);
   })().catch(() => {});

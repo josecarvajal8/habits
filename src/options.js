@@ -3,6 +3,10 @@ const DAY_NAMES = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 const daysEl = document.getElementById('days');
 const intervalsEl = document.getElementById('intervals');
 const statusEl = document.getElementById('status');
+const whEnabled = document.getElementById('wh-enabled');
+const whStart = document.getElementById('wh-start');
+const whEnd = document.getElementById('wh-end');
+const whHint = document.getElementById('wh-hint');
 let savedTimer = null;
 
 function flashSaved() {
@@ -23,6 +27,11 @@ async function collect() {
     ),
     activityMode: document.querySelector('input[name="activityMode"]:checked')
       .value,
+    workHours: {
+      enabled: whEnabled.getAttribute('aria-checked') === 'true',
+      start: whStart.value,
+      end: whEnd.value,
+    },
   };
 }
 
@@ -73,6 +82,27 @@ document.querySelectorAll('input[name="activityMode"]').forEach((input) => {
   input.addEventListener('change', persist);
 });
 
+whEnabled.addEventListener('click', async () => {
+  whEnabled.setAttribute(
+    'aria-checked',
+    whEnabled.getAttribute('aria-checked') === 'true' ? 'false' : 'true',
+  );
+  await persist();
+});
+
+[whStart, whEnd].forEach((input) => {
+  input.addEventListener('change', async () => {
+    if (whStart.value && whEnd.value && whStart.value >= whEnd.value) {
+      whHint.textContent = 'Start must be before end.';
+      whHint.classList.add('is-error');
+      return;
+    }
+    whHint.textContent = 'Local time, same day';
+    whHint.classList.remove('is-error');
+    await persist();
+  });
+});
+
 async function render() {
   const settings = await HabitsSettings.load();
   daysEl.querySelectorAll('.ss-chip').forEach((chip) => {
@@ -92,6 +122,12 @@ async function render() {
     .forEach((input) => {
       input.checked = settings.activityMode === input.value;
     });
+  whEnabled.setAttribute(
+    'aria-checked',
+    String(settings.workHours.enabled),
+  );
+  whStart.value = settings.workHours.start;
+  whEnd.value = settings.workHours.end;
 }
 
 render().catch(() => {
