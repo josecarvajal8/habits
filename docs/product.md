@@ -13,6 +13,7 @@ A desktop browser user who sits for long periods and wants a lightweight nudge.
 | Setting | V1 rule |
 |---|---|
 | Active days | User-selectable weekdays (e.g. Mon–Fri); no days selected pauses reminders |
+| Work hours | Optional, off by default; when enabled, same-day window (default 09:00–17:00 local) |
 | Reminder interval | Preset: 30, 45, 60, or 90 minutes; default 45 |
 | Activity mode | Stretch break (move/stretch 5 min, default) or standing desk (work standing 10 min) |
 | Snooze duration | Fixed at 10 minutes, not configurable |
@@ -25,7 +26,7 @@ A desktop browser user who sits for long periods and wants a lightweight nudge.
    - **Snooze 10 min** — the reminder fires again in 10 minutes.
    - Closing the notification or clicking its body = **Ignore**, which restarts a fresh work interval.
 3. When the activity timer ends, show a completion notification (“Break complete” / “You can sit down”) and automatically start the next work interval.
-4. On inactive days, or with no days selected, show no reminders; the worker keeps rechecking each interval.
+4. On inactive days, with no days selected, or outside enabled work hours, show no reminders; the worker sleeps until the next window opens, then begins one full interval before the first reminder. The popup shows `Paused until …`.
 5. The popup shows live cycle status (working, snoozed, stretching, standing, awaiting action, paused) plus the next scheduled time.
 6. All configuration lives in browser-local extension storage (`chrome.storage.local`).
 7. While a reminder or completion notification is outstanding, the toolbar badge shows `!`. Acting on it, or clicking/closing it, clears the badge.
@@ -40,8 +41,8 @@ A desktop browser user who sits for long periods and wants a lightweight nudge.
 - [ ] Completion notification appears and the next work interval starts automatically.
 - [ ] Snooze delays exactly one cycle by 10 minutes.
 - [ ] Closing/ignoring restarts a fresh work interval.
-- [ ] No notification on inactive days or with no days selected.
-- [ ] Popup shows accurate cycle status and next time.
+- [ ] No notification on inactive days, with no days selected, or outside work hours.
+- [ ] Popup shows accurate cycle status and next time, including `Paused until …`.
 - [ ] Works in both Chrome and Brave (Chromium Manifest V3).
 
 ## Non-goals for V1
