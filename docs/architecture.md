@@ -30,13 +30,16 @@ User settings live in `chrome.storage.local`:
   activeDays: number[],
   intervalMinutes: 30 | 45 | 60 | 90,
   activityMode: 'stretch-break' | 'standing-desk',
+  activityDurationMinutes: number,
   workHours: { enabled: boolean, start: 'HH:MM', end: 'HH:MM' }
 }
 ```
 
-Defaults are Monday–Friday, 45 minutes, stretch break, and work hours disabled
-with a 09:00–17:00 local-time window. Work-hour windows must start before they
-end; overnight windows are outside V1 scope.
+Defaults are Monday–Friday, a 45-minute reminder interval, stretch break, a
+10-minute activity duration, and work hours disabled with a 09:00–17:00
+local-time window. Activity duration must be a whole number from 1–60.
+Work-hour windows must start before they end; overnight windows are outside V1
+scope.
 
 The worker stores cycle status separately under `cycle`:
 
@@ -56,12 +59,12 @@ The worker uses sequential one-shot alarms:
 Working
   ↓ configured interval (`work`)
 Reminder awaiting action
-  ├─ Start activity → Activity (`activity`, 5 or 10 min)
+  ├─ Start activity → Activity (`activity`, configured 1–60 min)
   ├─ Snooze         → Snoozed (`snooze`, 10 min) → Reminder
   └─ Close/click    → Working (fresh interval)
 
 Activity
-  ↓ 5 min stretch break or 10 min standing
+  ↓ configured activity duration
 Completion notification + automatically restart Working
 ```
 
@@ -88,7 +91,8 @@ until the next window.
 
 The reminder notification has two buttons:
 
-1. **Start break** or **Start standing** starts the selected activity timer.
+1. **Start break** or **Start standing** starts the selected activity timer for
+   the configured duration.
 2. **Snooze 10 min** schedules the fixed snooze alarm.
 
 Clicking the reminder body or closing it is treated as Ignore and starts a fresh
@@ -126,8 +130,8 @@ or closing that notification only clears the badge.
    and load the repository folder unpacked.
 2. Select today and a short test interval, then restart the browser and confirm
    that a fresh interval begins.
-3. Confirm Start schedules 5 minutes for a stretch break or 10 minutes for
-   standing, completion notifies, and the next work interval starts.
+3. Set the activity duration to a valid value, confirm Start uses it for both
+   activity modes, completion notifies, and the next work interval starts.
 4. Confirm Snooze delays the reminder by exactly 10 minutes.
 5. Confirm clicking or closing a reminder starts a fresh interval.
 6. Confirm inactive days and times stay silent, and an enabled future work

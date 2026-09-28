@@ -7,11 +7,14 @@ var HabitsSettings = (function () {
     activeDays: [1, 2, 3, 4, 5],
     intervalMinutes: 45,
     activityMode: 'stretch-break',
+    activityDurationMinutes: 10,
     workHours: { enabled: false, start: '09:00', end: '17:00' },
   };
 
   var INTERVALS = [30, 45, 60, 90];
   var MODES = ['stretch-break', 'standing-desk'];
+  var ACTIVITY_DURATION_MIN = 1;
+  var ACTIVITY_DURATION_MAX = 60;
   // 0 = Sunday ... 6 = Saturday (matches Date#getDay)
   var DAYS = [0, 1, 2, 3, 4, 5, 6];
 
@@ -47,6 +50,7 @@ var HabitsSettings = (function () {
       activeDays: DEFAULTS.activeDays.slice(),
       intervalMinutes: DEFAULTS.intervalMinutes,
       activityMode: DEFAULTS.activityMode,
+      activityDurationMinutes: DEFAULTS.activityDurationMinutes,
       workHours: sanitizeWorkHours(stored && stored.workHours),
     };
     if (!stored) return settings;
@@ -61,6 +65,13 @@ var HabitsSettings = (function () {
     if (MODES.indexOf(stored.activityMode) !== -1) {
       settings.activityMode = stored.activityMode;
     }
+    if (
+      Number.isInteger(stored.activityDurationMinutes) &&
+      stored.activityDurationMinutes >= ACTIVITY_DURATION_MIN &&
+      stored.activityDurationMinutes <= ACTIVITY_DURATION_MAX
+    ) {
+      settings.activityDurationMinutes = stored.activityDurationMinutes;
+    }
     return settings;
   }
 
@@ -69,6 +80,7 @@ var HabitsSettings = (function () {
       'activeDays',
       'intervalMinutes',
       'activityMode',
+      'activityDurationMinutes',
       'workHours',
     ]);
     return sanitize(stored);
@@ -122,6 +134,8 @@ var HabitsSettings = (function () {
     DEFAULTS: DEFAULTS,
     INTERVALS: INTERVALS,
     MODES: MODES,
+    ACTIVITY_DURATION_MIN: ACTIVITY_DURATION_MIN,
+    ACTIVITY_DURATION_MAX: ACTIVITY_DURATION_MAX,
     DAYS: DAYS,
     load: load,
     save: save,

@@ -7,7 +7,10 @@ const whEnabled = document.getElementById('wh-enabled');
 const whStart = document.getElementById('wh-start');
 const whEnd = document.getElementById('wh-end');
 const whHint = document.getElementById('wh-hint');
+const activityDuration = document.getElementById('activity-duration');
+const activityDurationHint = document.getElementById('activity-duration-hint');
 let savedTimer = null;
+let lastValidActivityDuration = HabitsSettings.DEFAULTS.activityDurationMinutes;
 
 function flashSaved() {
   statusEl.textContent = 'Saved';
@@ -27,6 +30,9 @@ async function collect() {
     ),
     activityMode: document.querySelector('input[name="activityMode"]:checked')
       .value,
+    activityDurationMinutes: isActivityDurationValid()
+      ? Number(activityDuration.value)
+      : lastValidActivityDuration,
     workHours: {
       enabled: whEnabled.getAttribute('aria-checked') === 'true',
       start: whStart.value,
@@ -35,12 +41,34 @@ async function collect() {
   };
 }
 
+function isActivityDurationValid() {
+  const minutes = Number(activityDuration.value);
+  return (
+    activityDuration.value !== '' &&
+    Number.isInteger(minutes) &&
+    minutes >= HabitsSettings.ACTIVITY_DURATION_MIN &&
+    minutes <= HabitsSettings.ACTIVITY_DURATION_MAX
+  );
+}
+
+function validateActivityDuration() {
+  const valid = isActivityDurationValid();
+  activityDuration.setAttribute('aria-invalid', String(!valid));
+  activityDurationHint.textContent = valid
+    ? 'Whole minutes, from 1 to 60'
+    : 'Enter a whole number from 1 to 60.';
+  activityDurationHint.classList.toggle('is-error', !valid);
+  return valid;
+}
+
 async function persist() {
   try {
     await HabitsSettings.save(await collect());
     flashSaved();
+    return true;
   } catch {
     statusEl.textContent = 'Could not save settings.';
+    return false;
   }
 }
 
@@ -80,6 +108,14 @@ HabitsSettings.INTERVALS.forEach((minutes) => {
 
 document.querySelectorAll('input[name="activityMode"]').forEach((input) => {
   input.addEventListener('change', persist);
+});
+
+activityDuration.addEventListener('input', validateActivityDuration);
+activityDuration.addEventListener('change', async () => {
+  if (!validateActivityDuration()) return;
+  if (await persist()) {
+    lastValidActivityDuration = Number(activityDuration.value);
+  }
 });
 
 whEnabled.addEventListener('click', async () => {
@@ -122,6 +158,9 @@ async function render() {
     .forEach((input) => {
       input.checked = settings.activityMode === input.value;
     });
+  activityDuration.value = String(settings.activityDurationMinutes);
+  lastValidActivityDuration = settings.activityDurationMinutes;
+  validateActivityDuration();
   whEnabled.setAttribute(
     'aria-checked',
     String(settings.workHours.enabled),

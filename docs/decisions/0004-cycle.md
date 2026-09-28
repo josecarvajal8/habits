@@ -1,10 +1,11 @@
 # ADR 0004 — Sequential work/activity cycle
 
 Date: 2026-09-23
-Status: Accepted, amended by ADR 0006
+Status: Accepted, amended by ADRs 0006 and 0007
 
 > ADR 0006 adds the `wakeup` alarm, extending the one-alarm-at-a-time rule from
-> three alarm names to four.
+> three alarm names to four. ADR 0007 replaces the per-mode activity durations
+> with one configurable duration.
 
 ## Context
 

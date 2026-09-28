@@ -15,14 +15,15 @@ A desktop browser user who sits for long periods and wants a lightweight nudge.
 | Active days | User-selectable weekdays (e.g. Mon–Fri); no days selected pauses reminders |
 | Work hours | Optional, off by default; when enabled, same-day window (default 09:00–17:00 local) |
 | Reminder interval | Preset: 30, 45, 60, or 90 minutes; default 45 |
-| Activity mode | Stretch break (move/stretch 5 min, default) or standing desk (work standing 10 min) |
+| Activity mode | Stretch break (move/stretch, default) or standing desk (work standing) |
+| Activity duration | User-entered whole minutes from 1–60; default 10; shared by both activity modes |
 | Snooze duration | Fixed at 10 minutes, not configurable |
 
 ## Behavior
 
 1. On install and browser startup, begin a fresh work interval from zero.
 2. On an active day, show a reminder notification after the interval with two actions (at most two buttons are allowed):
-   - **Start break / Start standing** — begins the activity timer: 5 minutes for stretch break, 10 minutes for standing desk.
+   - **Start break / Start standing** — begins the activity timer for the configured activity duration.
    - **Snooze 10 min** — the reminder fires again in 10 minutes.
    - Closing the notification or clicking its body = **Ignore**, which restarts a fresh work interval.
 3. When the activity timer ends, show a completion notification (“Break complete” / “You can sit down”) and automatically start the next work interval.
@@ -36,9 +37,10 @@ A desktop browser user who sits for long periods and wants a lightweight nudge.
 - [ ] User can select active days and they persist across restarts.
 - [ ] User can optionally enable same-day work hours, and the setting persists.
 - [ ] User can set one reminder interval and it persists.
+- [ ] User can set an activity duration from 1–60 whole minutes and it persists.
 - [ ] Fresh browser start restarts the timer; no stale timers fire immediately.
 - [ ] Notification appears after the interval on an active day.
-- [ ] Start begins a 5-minute (stretch) or 10-minute (standing desk) activity timer.
+- [ ] Start begins an activity timer for the configured duration in either activity mode.
 - [ ] Completion notification appears and the next work interval starts automatically.
 - [ ] Snooze delays exactly one cycle by 10 minutes.
 - [ ] Closing/ignoring restarts a fresh work interval.
