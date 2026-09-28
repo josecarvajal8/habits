@@ -34,6 +34,7 @@ A desktop browser user who sits for long periods and wants a lightweight nudge.
 ## Acceptance criteria
 
 - [ ] User can select active days and they persist across restarts.
+- [ ] User can optionally enable same-day work hours, and the setting persists.
 - [ ] User can set one reminder interval and it persists.
 - [ ] Fresh browser start restarts the timer; no stale timers fire immediately.
 - [ ] Notification appears after the interval on an active day.
@@ -48,7 +49,6 @@ A desktop browser user who sits for long periods and wants a lightweight nudge.
 ## Non-goals for V1
 
 - Accounts, sync, backend, analytics, or tracking.
-- Active-hours scheduling.
 - Per-day intervals.
 - Custom snooze duration.
 - Physical-activity detection.

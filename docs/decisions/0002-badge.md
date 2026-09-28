@@ -1,8 +1,11 @@
 # ADR 0002 — Toolbar badge for outstanding reminders
 
 Date: 2026-09-23
-Status: Accepted
+Status: Accepted, amended by ADR 0004
 Amends: 0001 (which scoped V1 to notifications only, no badge)
+
+> ADR 0004 replaces the original Snooze/Dismiss notification actions with
+> Start/Snooze; closing or clicking the reminder is now the Ignore action.
 
 ## Context
 

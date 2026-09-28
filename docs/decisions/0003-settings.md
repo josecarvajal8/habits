@@ -1,7 +1,10 @@
 # ADR 0003 — Initial settings model
 
 Date: 2026-09-23
-Status: Accepted
+Status: Accepted, amended by ADRs 0004 and 0006
+
+> ADR 0004 delivers the timed cycle that this record deferred. ADR 0006 adds
+> `workHours` to the settings shape.
 
 ## Context
 

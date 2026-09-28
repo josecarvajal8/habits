@@ -1,7 +1,11 @@
 # ADR 0001 — V1 scope
 
 Date: 2026-09-20
-Status: Accepted
+Status: Accepted, amended by ADRs 0002, 0004, and 0006
+
+> This record captures the initial V1 boundary. ADR 0002 adds a toolbar badge,
+> ADR 0004 replaces Dismiss with the Start/Snooze activity cycle, and ADR 0006
+> adds optional work hours. Those later accepted decisions take precedence.
 
 ## Context
 

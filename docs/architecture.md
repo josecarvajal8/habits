@@ -1,95 +1,136 @@
 # Architecture — Stand Reminder V1
 
-## Phase 0 — Extension scaffold (current)
+## Overview
 
-Loadable hello-world only: `manifest.json` plus a static popup (`src/popup.html`, `src/popup.css`). No permissions, no background service worker, no alarms, no notifications, no storage, no options page. Those arrive with the reminder milestone.
+Stand Reminder is a dependency-free Chromium Manifest V3 extension for Chrome
+and Brave. It uses plain HTML, CSS, and JavaScript with no build step. Runtime
+state is recoverable from `chrome.storage.local` and `chrome.alarms`; the
+service worker never depends on in-memory timers.
 
-## Worker logic (this branch)
+## Runtime components
 
-Sequential one-shot alarms replace the earlier periodic-alarm design:
+```text
+manifest.json          MV3 manifest, permissions, and entry points
+src/background.js      Alarm, notification, badge, and cycle transitions
+src/settings.js        Shared defaults, validation, and work-window helpers
+src/options.html|js    Auto-saving settings interface
+src/popup.html|js      Current status, countdown, and immediate actions
+src/styles/            Shared visual tokens and component styles
+```
+
+The extension requires only `alarms`, `notifications`, and `storage`. It makes
+no external network requests.
+
+## Settings and persisted state
+
+User settings live in `chrome.storage.local`:
+
+```text
+{
+  activeDays: number[],
+  intervalMinutes: 30 | 45 | 60 | 90,
+  activityMode: 'stretch-break' | 'standing-desk',
+  workHours: { enabled: boolean, start: 'HH:MM', end: 'HH:MM' }
+}
+```
+
+Defaults are Monday–Friday, 45 minutes, stretch break, and work hours disabled
+with a 09:00–17:00 local-time window. Work-hour windows must start before they
+end; overnight windows are outside V1 scope.
+
+The worker stores cycle status separately under `cycle`:
+
+```text
+{ phase, nextAt, mode }
+```
+
+The popup uses this record to render working, awaiting, snoozed, activity, and
+paused states after the service worker has suspended. Settings-change handling
+ignores `cycle` writes.
+
+## Alarm and activity cycle
+
+The worker uses sequential one-shot alarms:
 
 ```text
 Working
-  ↓ configured interval
+  ↓ configured interval (`work`)
 Reminder awaiting action
-  ├─ Start activity → Activity (5 min stretch / 10 min standing)
-  ├─ Snooze         → Snoozed (10 min) → Reminder
-  └─ Close/click    → Working (fresh interval, "ignore")
+  ├─ Start activity → Activity (`activity`, 5 or 10 min)
+  ├─ Snooze         → Snoozed (`snooze`, 10 min) → Reminder
+  └─ Close/click    → Working (fresh interval)
 
 Activity
-  ↓ 5 or 10 min
+  ↓ 5 min stretch break or 10 min standing
 Completion notification + automatically restart Working
 ```
 
-Named alarms: `work`, `snooze`, `activity`. Only one is ever scheduled: every transition clears all three first. Cycle state `{ phase, nextAt, mode }` persists in `chrome.storage.local` under `cycle` so the popup can render status after worker suspension. The popup primary action starts/ends the activity immediately through `start-now` / `end-now` messages; the legacy `test-reminder` message fires an immediate real reminder through the same code path as the timer.
+The fourth alarm, `wakeup`, parks the worker until the next enabled work window.
+Only one of `work`, `snooze`, `activity`, or `wakeup` is scheduled at a time;
+every transition clears all four before creating the next alarm.
 
-## UI polish (this branch)
+## Work-window behavior
 
-Visual system adapted from the exported Stand & Sit design package (`tokens.css` + curated `components.css` under `src/styles/`): light/dark surfaces, blue working state, orange activity state, state pill + progress ring + countdown + next-event status card, contextual primary action (Start break/standing now, End break/Sit now), dedicated auto-saving options page with day chips, interval presets, and activity choices. Excluded for now: daily timeline/goals, minute-countdown badge, stateful toolbar icons, Pause, and bundled Manrope (system font stack, no remote requests). Extension icons replaced with the design package PNGs.
+The worker checks the local weekday and optional work hours when a work or
+snooze alarm fires. Outside an enabled window it schedules `wakeup` for the next
+active window. When `wakeup` fires, a complete work interval begins, so a
+reminder does not appear immediately at opening time.
 
-## Work hours (this branch)
+When work hours are disabled, inactive times are rechecked after a fresh work
+interval. With no active days, notifications remain silent and the popup shows
+Paused without a resume time.
 
-Optional `workHours: { enabled, start, end }` (`chrome.storage.local`, off by default, local time, same-day windows). Outside the window the worker clears all alarms and schedules a one-shot `wakeup` alarm for the next window start (`{ phase: 'paused', nextAt }`); the wakeup handler begins a full fresh work interval inside the window. Snoozes crossing closing time therefore defer naturally, and an activity that ends after close still notifies completion before parking. Options page: switch + start/end time inputs with start-before-end validation. “Pause for today” remains out of scope.
+A snooze that crosses closing time follows the same inactive path. An activity
+that finishes after closing still shows its completion notification, then parks
+until the next window.
 
-## Test slice — Alerts and badge (superseded)
+## Notifications and badge
 
-Popup **Test reminder** button sends a message to the service worker, which shows one notification and sets the toolbar badge to `!` (outstanding reminder). Clicking or closing the notification clears the badge. No alarms, no settings, no storage, no Snooze/Dismiss yet.
+The reminder notification has two buttons:
 
-## Settings (this branch)
+1. **Start break** or **Start standing** starts the selected activity timer.
+2. **Snooze 10 min** schedules the fixed snooze alarm.
 
-Options page (`src/options.html`) edits `{ activeDays, intervalMinutes, activityMode }` in `chrome.storage.local` via the shared `src/settings.js` module (defaults: Mon–Fri, 45 min, stretch break). The popup shows a one-line summary and links to settings; the test notification text follows the saved activity mode. Timed cycles (alarms, break/standing completion, snooze) are deferred to the next branch.
+Clicking the reminder body or closing it is treated as Ignore and starts a fresh
+work interval. Programmatic notification clears also trigger `onClosed`, so the
+worker acts only when `byUser === true`.
 
-## Platform
+The toolbar badge shows `!` while a reminder or completion notification is
+outstanding. Completion automatically starts the next work interval; clicking
+or closing that notification only clears the badge.
 
-Chromium Manifest V3 extension. Compatible with Chrome and Brave. No build step required for V1; plain HTML/CSS/JS.
+## Lifecycle and data flow
 
-## Components
+1. `onInstalled`, `onStartup`, or a settings change loads stored settings.
+2. If the current time is active, the worker schedules a fresh `work` alarm;
+   otherwise it parks on `wakeup` when a future enabled window exists.
+3. A `work` or `snooze` alarm rechecks the current day and time before notifying.
+4. Reminder actions schedule `activity`, `snooze`, or a fresh `work` interval.
+5. An `activity` alarm shows completion and automatically re-enters the cycle.
+6. The popup can start or end an activity through `start-now` and `end-now`
+   messages, using the same worker transitions.
 
-```text
-manifest.json          # MV3 manifest, permissions, entry points
-src/background.js      # service worker: alarms, day checks, notifications
-src/options.html|js    # settings UI: active days + interval
-src/popup.html|js      # optional lightweight status view (V1: link to options)
-```
+## Reliability and privacy
 
-## APIs and permissions
-
-`manifest.json` needs:
-
-- `"permissions": ["alarms", "notifications", "storage"]`
-- `"background": { "service_worker": "src/background.js" }`
-- `"options_page"` pointing at the settings page.
-- `"action"` for the toolbar popup.
-
-Why:
-
-- `alarms` — reliable interval + snooze timers that survive service-worker suspension. Do not use `setTimeout` in the worker.
-- `notifications` — `chrome.notifications.create` with two buttons (`Snooze`, `Dismiss`), handled via `chrome.notifications.onButtonClicked`.
-- `storage` — `chrome.storage.local` for `{ activeDays, intervalMinutes }`. Local-only satisfies V1 privacy.
-
-## Data flow
-
-1. `onInstalled` / `onStartup` / settings change → clear all alarms, create one-shot `work` alarm with `delayInMinutes = intervalMinutes`, persist `{ phase: 'working', nextAt }`.
-2. `work`/`snooze` alarm fires → check current weekday against `activeDays` and time against `workHours`. Inactive → park on a `wakeup` alarm for the next window (or a fresh `work` alarm when hours are disabled). Active → reminder notification with Start + Snooze buttons, badge `!`, phase `awaiting`.
-3. Reminder action:
-   - Start → one-shot `activity` alarm (`5` min stretch / `10` min standing), phase `activity`.
-   - Snooze → one-shot `snooze` alarm (`10` min), phase `snoozed`.
-   - Click body / close (`byUser`) → fresh `work` alarm (“ignore”).
-4. `activity` alarm fires → completion notification, badge `!`, immediately schedule a fresh `work` alarm (auto-restart).
-5. Completion click/close clears the badge; the next cycle is already running.
-6. Options page reads/writes `chrome.storage.local`; settings changes rebuild the work alarm. `storage.onChanged` ignores the worker's own `cycle` writes.
-
-Browser startup always rebuilds the periodic alarm from stored settings, giving the "fresh cycle" behavior.
-
-## Reliability notes
-
-- Service workers suspend; all timer state must be re-derivable from `chrome.storage.local` + alarms, not in-memory variables.
-- Only one alarm (`work`, `snooze`, `activity`, or `wakeup`) is ever scheduled; every transition clears all four first.
-- `notifications.clear()` fires `onClosed` with `byUser === false`; only explicit user dismissal restarts the cycle.
-- Day check uses local time at fire time.
+- Service workers suspend, so timers use `chrome.alarms`, never `setTimeout` or
+  `setInterval` in the worker.
+- Startup always rebuilds scheduling from stored settings instead of trusting
+  stale in-memory state.
+- Day and time checks use the browser's local time at alarm fire time.
+- Settings remain in `chrome.storage.local`; there is no sync, backend,
+  analytics, or tracking.
 
 ## Verification (manual for V1)
 
-- Load via `chrome://extensions` → Developer mode → Load unpacked.
-- Set interval to a small test value, select today, restart browser, confirm fresh timer.
-- Confirm notification, Snooze (10 min), Dismiss, and no notification on deselected day.
+1. Open `chrome://extensions` or `brave://extensions`, enable Developer mode,
+   and load the repository folder unpacked.
+2. Select today and a short test interval, then restart the browser and confirm
+   that a fresh interval begins.
+3. Confirm Start schedules 5 minutes for a stretch break or 10 minutes for
+   standing, completion notifies, and the next work interval starts.
+4. Confirm Snooze delays the reminder by exactly 10 minutes.
+5. Confirm clicking or closing a reminder starts a fresh interval.
+6. Confirm inactive days and times stay silent, and an enabled future work
+   window shows `Paused until …` before beginning a full interval.
+7. Confirm the popup status, countdown, next time, and toolbar badge follow each
+   transition accurately.

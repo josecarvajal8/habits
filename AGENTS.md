@@ -15,8 +15,8 @@ Stand-reminder browser extension (Chrome/Brave, Manifest V3). V1 source of truth
 
 ## Scope guardrails
 
-- V1 is notification-only, startup-based timing, fixed 10-min snooze, active-days + one shared interval, `chrome.storage.local` only.
-- Out of scope without an approved decision: backends, sync, analytics, per-day intervals, active hours, custom snooze, activity detection, mobile.
+- V1 uses notifications plus an outstanding badge, startup-based timing, fixed 10-min snooze, active days, optional same-day work hours, one shared interval, and `chrome.storage.local` only.
+- Out of scope without an approved decision: backends, sync, analytics, per-day intervals, custom snooze, activity detection, mobile.
 - If a request conflicts with `docs/product.md`, say so and propose a doc update first.
 
 ## Technical rules
