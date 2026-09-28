@@ -24,5 +24,5 @@ Stand-reminder browser extension (Chrome/Brave, Manifest V3). V1 source of truth
 - Manifest V3 only. Use `chrome.alarms` for timers (never `setTimeout` in the service worker).
 - Service worker must rebuild state from `chrome.storage.local` + alarms; no in-memory timer assumptions.
 - Permissions stay minimal: `alarms`, `notifications`, `storage`.
-- No build step in V1; plain HTML/CSS/JS under `src/`.
+- Plain HTML/CSS/JS under `src/`; `scripts/build.sh` packages the runtime whitelist with no toolchain.
 - No external network calls from the extension.

@@ -31,6 +31,14 @@ the extension's **Reload** button.
 The extension uses `chrome.storage.local`. It has no accounts, synchronization,
 backend, analytics, tracking, or external network requests.
 
+## Share with testers
+
+```sh
+./scripts/build.sh --zip
+```
+
+This also creates `dist/stand-reminder-<version>.zip` (version from `manifest.json`). Testers unzip it and load the folder with **Load unpacked** as above — never the ZIP itself. `dist/` is git-ignored; share the ZIP (e.g. as a GitHub Release asset).
+
 ## Repository layout
 
 ```text
