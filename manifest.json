@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Stand Reminder",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "Lightweight reminder to stand during the day.",
   "permissions": ["alarms", "notifications", "storage"],
   "background": {
