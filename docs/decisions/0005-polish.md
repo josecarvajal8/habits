@@ -1,7 +1,10 @@
 # ADR 0005 — Adopt Stand & Sit visual system
 
 Date: 2026-09-24
-Status: Accepted
+Status: Accepted, amended by ADR 0006
+
+> Work hours were deferred from this delivery slice and accepted for V1 in ADR
+> 0006.
 
 ## Context
 
