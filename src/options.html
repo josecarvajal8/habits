@@ -7,60 +7,80 @@
     <link rel="stylesheet" href="styles/tokens.css" />
     <link rel="stylesheet" href="styles/components.css" />
   </head>
-  <body>
-    <div class="ss-root ss-page">
+  <body class="ss-options-body">
+    <main class="ss-root ss-page">
       <h1 class="ss-page-title">Settings</h1>
 
-      <h2 class="ss-section-label">Active days</h2>
-      <div class="ss-group">
-        <div class="ss-row">
-          <div class="ss-chips" id="days"></div>
-        </div>
-      </div>
-
-      <h2 class="ss-section-label">Remind me every</h2>
-      <div class="ss-group">
-        <div class="ss-row">
-          <div class="ss-chips" id="intervals"></div>
-        </div>
-      </div>
-
-      <h2 class="ss-section-label">Activity</h2>
-      <div class="ss-group" id="modes">
-        <label class="ss-choice">
-          <input type="radio" name="activityMode" value="stretch-break" />
-          <span><strong>Stretch break</strong><br />Stand up, move, and stretch for 5 minutes.</span>
-        </label>
-        <label class="ss-choice">
-          <input type="radio" name="activityMode" value="standing-desk" />
-          <span><strong>Standing desk</strong><br />Raise your desk and work standing for 10 minutes.</span>
-        </label>
-      </div>
-
-      <h2 class="ss-section-label">Work hours</h2>
-      <div class="ss-group">
-        <div class="ss-row">
-          <div>
-            <div class="ss-row-label">Only during work hours</div>
-            <div class="ss-row-hint">Pause reminders outside these hours</div>
+      <div class="ss-settings-grid">
+        <section class="ss-settings-section">
+          <h2 class="ss-section-label">Active days</h2>
+          <div class="ss-group">
+            <div class="ss-row">
+              <div class="ss-chips" id="days"></div>
+            </div>
           </div>
-          <button type="button" role="switch" class="ss-switch" id="wh-enabled" aria-checked="false" aria-label="Only during work hours"></button>
-        </div>
-        <div class="ss-row">
-          <div>
-            <div class="ss-row-label">Hours</div>
-            <div class="ss-row-hint" id="wh-hint">Local time, same day</div>
+        </section>
+
+        <section class="ss-settings-section">
+          <h2 class="ss-section-label">Remind me every</h2>
+          <div class="ss-group">
+            <div class="ss-row">
+              <div class="ss-chips" id="intervals"></div>
+            </div>
           </div>
-          <div class="ss-time-range">
-            <input type="time" id="wh-start" value="09:00" aria-label="Work hours start" />
-            <span aria-hidden="true">–</span>
-            <input type="time" id="wh-end" value="17:00" aria-label="Work hours end" />
+        </section>
+
+        <section class="ss-settings-section">
+          <h2 class="ss-section-label">Activity</h2>
+          <div class="ss-group" id="modes">
+            <label class="ss-choice">
+              <input type="radio" name="activityMode" value="stretch-break" />
+              <span><strong>Stretch break</strong><br />Stand up, move, and stretch.</span>
+            </label>
+            <label class="ss-choice">
+              <input type="radio" name="activityMode" value="standing-desk" />
+              <span><strong>Standing desk</strong><br />Raise your desk and work standing.</span>
+            </label>
+            <div class="ss-row">
+              <div>
+                <label class="ss-row-label" for="activity-duration">Activity duration</label>
+                <div class="ss-row-hint" id="activity-duration-hint">Whole minutes, from 1 to 60</div>
+              </div>
+              <div class="ss-number-field">
+                <input type="number" id="activity-duration" min="1" max="60" step="1" inputmode="numeric" aria-describedby="activity-duration-hint" />
+                <span>min</span>
+              </div>
+            </div>
           </div>
-        </div>
+        </section>
+
+        <section class="ss-settings-section">
+          <h2 class="ss-section-label">Work hours</h2>
+          <div class="ss-group">
+            <div class="ss-row">
+              <div>
+                <div class="ss-row-label">Only during work hours</div>
+                <div class="ss-row-hint">Pause reminders outside these hours</div>
+              </div>
+              <button type="button" role="switch" class="ss-switch" id="wh-enabled" aria-checked="false" aria-label="Only during work hours"></button>
+            </div>
+            <div class="ss-row">
+              <div>
+                <div class="ss-row-label">Hours</div>
+                <div class="ss-row-hint" id="wh-hint">Local time, same day</div>
+              </div>
+              <div class="ss-time-range">
+                <input type="time" id="wh-start" value="09:00" aria-label="Work hours start" />
+                <span aria-hidden="true">–</span>
+                <input type="time" id="wh-end" value="17:00" aria-label="Work hours end" />
+              </div>
+            </div>
+          </div>
+        </section>
       </div>
 
       <p class="ss-saved" id="status" role="status"></p>
-    </div>
+    </main>
     <script src="settings.js"></script>
     <script src="options.js"></script>
   </body>

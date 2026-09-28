@@ -9,19 +9,10 @@ const ALARM_ACTIVITY = 'activity';
 const ALARM_WAKEUP = 'wakeup';
 
 const SNOOZE_MINUTES = 10;
-const ACTIVITY_MINUTES = {
-  'stretch-break': 5,
-  'standing-desk': 10,
-};
 
 const START_LABELS = {
   'stretch-break': 'Start break',
   'standing-desk': 'Start standing',
-};
-
-const REMINDER_MESSAGES = {
-  'stretch-break': 'Stand up, move, and stretch for 5 minutes.',
-  'standing-desk': 'Raise your desk and work standing for 10 minutes.',
 };
 
 const COMPLETE_MESSAGES = {
@@ -29,11 +20,11 @@ const COMPLETE_MESSAGES = {
   'standing-desk': 'You can sit down. Back to work.',
 };
 
-function activityMinutes(mode) {
-  return (
-    ACTIVITY_MINUTES[mode] ||
-    ACTIVITY_MINUTES[HabitsSettings.DEFAULTS.activityMode]
-  );
+function reminderMessage(mode, minutes) {
+  const duration = `${minutes} ${minutes === 1 ? 'minute' : 'minutes'}`;
+  return mode === 'standing-desk'
+    ? `Raise your desk and work standing for ${duration}.`
+    : `Stand up, move, and stretch for ${duration}.`;
 }
 
 async function getCycle() {
@@ -77,7 +68,7 @@ async function scheduleSnooze() {
 }
 
 async function startActivity(settings) {
-  const minutes = activityMinutes(settings.activityMode);
+  const minutes = settings.activityDurationMinutes;
   await clearAllAlarms();
   await chrome.alarms.create(ALARM_ACTIVITY, { delayInMinutes: minutes });
   await setCycle({
@@ -137,7 +128,7 @@ async function fireReminder() {
     type: 'basic',
     iconUrl: chrome.runtime.getURL('icons/icon-48.png'),
     title: 'Time to stand',
-    message: REMINDER_MESSAGES[mode],
+    message: reminderMessage(mode, settings.activityDurationMinutes),
     buttons: [{ title: START_LABELS[mode] }, { title: 'Snooze 10 min' }],
     requireInteraction: true,
   });
@@ -175,6 +166,7 @@ chrome.storage.onChanged.addListener((changes, area) => {
     'activeDays' in changes ||
     'intervalMinutes' in changes ||
     'activityMode' in changes ||
+    'activityDurationMinutes' in changes ||
     'workHours' in changes
   ) {
     HabitsSettings.load().then(enterWindow).catch(() => {});

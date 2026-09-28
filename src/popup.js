@@ -1,6 +1,5 @@
 const RING_C = 433.54;
 const SNOOZE_MINUTES = 10;
-const ACTIVITY_MINUTES = { 'stretch-break': 5, 'standing-desk': 10 };
 
 const pill = document.getElementById('state-pill');
 const card = document.getElementById('status-card');
@@ -83,7 +82,7 @@ async function computeView() {
   }
   if (cycle.phase === 'activity') {
     const mode = cycle.mode || settings.activityMode;
-    const total = (ACTIVITY_MINUTES[mode] || 5) * 60000;
+    const total = settings.activityDurationMinutes * 60000;
     return { kind: 'activity', mode, total, nextAt: cycle.nextAt };
   }
   if (cycle.phase === 'snoozed') {
